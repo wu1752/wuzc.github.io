@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>周五18:00倒计时</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradientText 3s ease infinite;
+        }
+        
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            color: #e0e0ff;
+        }
+        
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px 15px;
+            min-width: 140px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background 0.3s;
+        }
+        
+        .countdown-box:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .countdown-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .countdown-label {
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #b0b0ff;
+        }
+        
+        .message {
+            font-size: 1.8rem;
+            margin-top: 30px;
+            height: 40px;
+            transition: all 0.5s;
+            color: #ffcc70;
+            font-weight: 500;
+        }
+        
+        .highlight {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        .next-friday {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            color: #a0a0ff;
+        }
+        
+        .week-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+        
+        .circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+        
+        .circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            bottom: 15%;
+            right: 25%;
+            animation-delay: -3s;
+            animation-duration: 20s;
+        }
+        
+        .circle:nth-child(3) {
+            width: 70px;
+            height: 70px;
+            top: 50%;
+            left: 70%;
+            animation-delay: -5s;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+        
+        .week-progress {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .week-days {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: #b0b0ff;
+        }
+        
+        .week-day {
+            width: 14%;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .week-day.active {
+            color: #ffcc00;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #9090d0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+                margin-bottom: 30px;
+            }
+            
+            .countdown-box {
+                min-width: 120px;
+                padding: 20px 10px;
+            }
+            
+            .countdown-value {
+                font-size: 2.5rem;
+            }
+            
+            .countdown-label {
+                font-size: 1rem;
+            }
+            
+            .message {
+                font-size: 1.4rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .countdown-container {
+                gap: 10px;
+            }
+            
+            .countdown-box {
+                min-width: 80px;
+                padding: 15px 8px;
+            }
+            
+            .countdown-value {
+                font-size: 2rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.8rem;
+            }
+            
+            .message {
+                font-size: 1.2rem;
+            }
+            
+            .next-friday {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="week-animation">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+    
+    <div class="container">
+        <h1><i class="fas fa-calendar-week"></i> 周五18:00倒计时</h1>
+        <p class="subtitle">距离本周五下午6点下班还有...</p>
+        
+        <div class="countdown-container">
+            <div class="countdown-box">
+                <div class="countdown-value" id="days">0</div>
+                <div class="countdown-label">天</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="hours">0</div>
+                <div class="countdown-label">小时</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="minutes">0</div>
+                <div class="countdown-label">分钟</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-value" id="seconds">0</div>
+                <div class="countdown-label">秒</div>
+            </div>
+        </div>
+        
+        <div class="week-progress">
+            <div class="progress-bar" id="week-progress"></div>
+        </div>
+        
+        <div class="week-days">
+            <div class="week-day" id="mon">周一</div>
+            <div class="week-day" id="tue">周二</div>
+            <div class="week-day" id="wed">周三</div>
+            <div class="week-day" id="thu">周四</div>
+            <div class="week-day" id="fri">周五</div>
+            <div class="week-day" id="sat">周六</div>
+            <div class="week-day" id="sun">周日</div>
+        </div>
+        
+        <div class="message" id="message">⏳ 坚持住，周末即将到来！</div>
+        <div class="next-friday" id="next-friday">下一个周五：2023年10月27日 18:00</div>
+        
+        <div class="footer">
+            <i class="fas fa-clock"></i> 周末倒计时器 | 每一秒都值得期待
+        </div>
+    </div>
+
+    <script>
+        function getNextFriday18() {
+            const now = new Date();
+            const currentDay = now.getDay(); // 0为周日，5为周五
+            const hour = now.getHours();
+            
+            // 创建目标时间的副本
+            const target = new Date(now);
+            
+            // 计算下一个周五18:00
+            if (currentDay === 5) { // 今天是周五
+                if (hour < 18) { // 还没到18:00
+                    target.setHours(18, 0, 0, 0);
+                } else { // 已经过了18:00，计算下周五
+                    target.setDate(target.getDate() + 7);
+                    target.setHours(18, 0, 0, 0);
+                }
+            } else {
+                // 计算到下一个周五的天数
+                const daysUntilFriday = currentDay <= 5 ? 5 - currentDay : 5 - currentDay + 7;
+                target.setDate(target.getDate() + daysUntilFriday);
+                target.setHours(18, 0, 0, 0);
+            }
+            
+            return target;
+        }
+        
+        function getWeekProgress() {
+            const now = new Date();
+            const day = now.getDay();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            
+            // 当前是周日，但getDay()返回0，我们将其视为第7天
+            const adjustedDay = day === 0 ? 7 : day;
+            
+            // 计算本周已经过去的时间（以分钟为单位）
+            const minutesPassed = (adjustedDay - 1) * 24 * 60 + hour * 60 + minute;
+            
+            // 一周总分钟数
+            const totalMinutes = 7 * 24 * 60;
+            
+            // 计算进度百分比
+            return (minutesPassed / totalMinutes) * 100;
+        }
+        
+        function updateActiveDay() {
+            const now = new Date();
+            const day = now.getDay();
+            
+            // 清除所有激活状态
+            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            days.forEach(dayId => {
+                document.getElementById(dayId).classList.remove('active');
+            });
+            
+            // 设置当前天为激活状态
+            const activeDayId = days[day];
+            document.getElementById(activeDayId).classList.add('active');
+        }
+        
+        function updateCountdown() {
+            const now = new Date();
+            const target = getNextFriday18();
+            const diff = target - now;
+            
+            // 计算天、小时、分钟、秒
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // 更新显示
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            // 更新消息
+            const message = document.getElementById('message');
+            if (diff <= 0) {
+                message.innerHTML = "🎉 <span class='highlight'>周五18:00到了！周末愉快！</span> 🎉";
+            } else if (days === 0) {
+                message.innerHTML = "✨ <span class='highlight'>今天就是周五啦！坚持就是胜利！</span> ✨";
+            } else if (days === 1) {
+                message.innerHTML = "😊 <span class='highlight'>明天就是周五了！再坚持一下！</span> 😊";
+            } else if (days === 6) {
+                message.innerHTML = "😄 <span class='highlight'>距离下周五还有不到一周！</span> 😄";
+            } else {
+                message.innerHTML = "⏳ 坚持住，周末即将到来！";
+            }
+            
+            // 显示下一个周五日期
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('next-friday').textContent = 
+                `下一个周五：${target.toLocaleDateString('zh-CN', options)} 18:00`;
+            
+            // 更新周进度条
+            const progress = getWeekProgress();
+            document.getElementById('week-progress').style.width = `${progress}%`;
+            
+            // 更新当前激活的天
+            updateActiveDay();
+        }
+        
+        // 初始化
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
